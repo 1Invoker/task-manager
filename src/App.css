@@ -1,38 +1,106 @@
-.App {
-  text-align: center;
+/* Стили для компонентов */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h2 {
+  margin-top: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+th, td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+input[type="date"] {
+  width: 200px;
+}
+
+textarea {
+  height: 100px;
+}
+
+/* Дополнительные стили для GanttChart */
+canvas {
+  display: block;
+  max-width: 100%;
+  margin-top: 20px;
+}
+/* Стили для кнопок Проекты, Задачи, Диаграмма Ганта и Статистика сотрудников */
+.button-projects {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.button-tasks {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.button-gantt-chart {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.button-employee-stats {
+  background-color: #28a745;
+  color: #fff;
+}
+/* Стили для кнопок в навигационной панели */
+.navbar {
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+.navbar-nav {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-item {
+  margin-right: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  background-color: #eee;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #ccc;
 }
