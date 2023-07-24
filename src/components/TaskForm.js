@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 
 const TaskForm = () => {
-  const [tasks, setTasks] = useState([]);
-  const [taskNumber, setTaskNumber] = useState('');
-  const [creationDate, setCreationDate] = useState('');
-  const [responsibleEmployee, setResponsibleEmployee] = useState('');
-  const [plannedCompletionDate, setPlannedCompletionDate] = useState('');
-  const [actualCompletionDate, setActualCompletionDate] = useState('');
-  const [taskName, setTaskName] = useState('');
-  const [taskText, setTaskText] = useState('');
-  const [project, setProject] = useState('');
-  const [taskStatus, setTaskStatus] = useState('');
-  const [editIndex, setEditIndex] = useState(-1);
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [tasks, setTasks] = useState([]);//состояние, содержащее список задач
+  const [taskNumber, setTaskNumber] = useState('');// состояние, содержащее текущий номер задачи
+  const [creationDate, setCreationDate] = useState('');//состояние, содержащее текущую дату создания задачи
+  const [responsibleEmployee, setResponsibleEmployee] = useState('');// состояние, содержащее имя ответственного сотрудника
+  const [plannedCompletionDate, setPlannedCompletionDate] = useState('');//состояние, содержащее запланированную дату завершения задачи
+  const [actualCompletionDate, setActualCompletionDate] = useState('');//состояние, содержащее фактическую дату завершения задачи
+  const [taskName, setTaskName] = useState('');//состояние, содержащее текущее название задачи
+  const [taskText, setTaskText] = useState('');//состояние, содержащее текущий текст задачи
+  const [project, setProject] = useState('');//состояние, содержащее название проекта, связанного с задачей
+  const [taskStatus, setTaskStatus] = useState('');//состояние, содержащее текущий статус задачи (новая, в работе, завершена) 
+  const [editIndex, setEditIndex] = useState(-1);//состояние, хранящее индекс редактируемой задачи в массиве tasks. Если значение -1, то форма находится в режиме добавления новой задачи, иначе - в режиме редактирования существующей задачи
+  const [sortOrder, setSortOrder] = useState('asc');//состояние, содержащее текущий порядок сортировки задач. По умолчанию задан 'asc' (по возрастанию)
 
+  // Обработчик изменения значений в полях ввода формы
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // Обновляем соответствующее состояние в зависимости от имени поля ввода
     if (name === 'taskNumber') {
       setTaskNumber(value);
     } else if (name === 'creationDate') {
@@ -36,7 +38,7 @@ const TaskForm = () => {
       setTaskStatus(value);
     }
   };
-
+// Обработчик отправки формы задачи (добавление или редактирование)
   const handleTaskSubmit = (e) => {
     e.preventDefault();
     if (editIndex !== -1) {
@@ -83,7 +85,7 @@ const TaskForm = () => {
     setProject('');
     setTaskStatus('');
   };
-
+// Обработчик редактирования задачи(по индексу)
   const handleEditTask = (index) => {
     const task = tasks[index];
     setTaskNumber(task.taskNumber);
@@ -97,13 +99,13 @@ const TaskForm = () => {
     setTaskStatus(task.taskStatus);
     setEditIndex(index);
   };
-
+// Обработчик удаления задачи из массива
   const handleDeleteTask = (index) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
     setTasks(updatedTasks);
   };
-
+//Отменить редактирование
   const handleCancelEdit = () => {
     setTaskNumber('');
     setCreationDate('');
@@ -121,7 +123,7 @@ const TaskForm = () => {
     const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     setSortOrder(newSortOrder);
   };
-
+//Сортир. задач по созданию
   const sortTasksByCreationDate = (tasks, sortOrder) => {
     const sortedTasks = [...tasks];
 

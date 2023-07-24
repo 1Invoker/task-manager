@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
 const ProjectForm = () => {
-  const [projects, setProjects] = useState([]);
-  const [projectName, setProjectName] = useState('');
-  const [employees, setEmployees] = useState([]);
-  const [employeeName, setEmployeeName] = useState('');
-  const [editMode, setEditMode] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [projects, setProjects] = useState([]); //сост, содержащее список проектов
+  const [projectName, setProjectName] = useState('');//сост, содержащее текущее название проекта, введенное пользователем в форме
+  const [employees, setEmployees] = useState([]);// сост, содержащее список сотрудников текущего проекта
+  const [employeeName, setEmployeeName] = useState('');//сост, содержащее текущее имя сотрудника, введенное пользователем в форме
+  const [editMode, setEditMode] = useState(false);//сост, определяющее, находится ли форма в режиме редактирования проекта (true) или добавления нового проекта (false)
+  const [editIndex, setEditIndex] = useState(null);//сост, хранящее индекс редактируемого проекта в массиве 
 
+  // Обработч изменения значений в полях ввода
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'projectName') {
@@ -17,17 +18,19 @@ const ProjectForm = () => {
     }
   };
 
+  // Обработчик добавления нового сотрудника в список
   const handleAddEmployee = () => {
     if (employeeName) {
       setEmployees([...employees, employeeName]);
       setEmployeeName('');
     }
   };
-
+ // Обработчик добавления нового проекта или редактирования существующего
   const handleAddProject = (e) => {
     e.preventDefault();
     if (projectName && employees.length > 0) {
       if (editMode) {
+        // Если форма находится в режиме редактирования, обновляем информацию о проекте в массиве
         const updatedProjects = [...projects];
         updatedProjects[editIndex] = {
           projectName: projectName,
@@ -37,12 +40,13 @@ const ProjectForm = () => {
         setEditMode(false);
         setEditIndex(null);
       } else {
+        // Если форма находится в режиме добавления нового проекта, добавляем его в массив
         const newProject = {
           projectName: projectName,
           employees: employees,
         };
         setProjects([...projects, newProject]);
-      }
+      }//сбрасываем после добав. или редактирования 
       setProjectName('');
       setEmployees([]);
       setEmployeeName('');

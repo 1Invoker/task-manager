@@ -1,5 +1,6 @@
 import React from 'react';
 import Chart from 'chart.js/auto';
+import 'chartjs-adapter-moment';
 
 const GanttChart = ({ tasks }) => {
 const chartRef = React.useRef(null);

@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import ProjectForm from './components/ProjectForm';
 import TaskForm from './components/TaskForm';
-import TaskList from './components/TaskList';
 import GanttChart from './components/GanttChart';
 import EmployeeStats from './components/EmployeeStats';
+import TaskList from './components/TaskList';
 import './App.css';
 
 const App = () => {
@@ -31,8 +31,7 @@ const App = () => {
         <Routes>
           <Route path="/projects" element={<ProjectForm />} />
           <Route path="/tasks" element={<TaskForm />} />
-          <Route path="/tasks" element={<TaskList />} />
-          <Route path="/gantt-chart" element={<GanttChart />} />
+          <Route path="/gantt-chart" element={<TaskList />} />
           <Route path="/employee-stats" element={<EmployeeStats />} />
         </Routes>
       </div>
