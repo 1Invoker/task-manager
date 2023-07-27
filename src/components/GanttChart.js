@@ -1,77 +1,75 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-moment';
 
 const GanttChart = ({ tasks }) => {
-const chartRef = React.useRef(null);
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
 
-React.useEffect(() => {
-if (tasks && tasks.length > 0) {
-const ctx = chartRef.current.getContext('2d');
+  useEffect(() => {
+    if (tasks && tasks.length > 0) {
+      const ctx = chartRef.current.getContext('2d');
 
+      // Предварительно удаляем предыдущий экземпляр диаграммы (если есть)
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
 
-  // Подготовка данных для диаграммы
-  const chartData = {
-    labels: tasks.map((task) => task.name),
-    datasets: [
-      {
-        label: 'Дата начала',
-        backgroundColor: 'green',
-        data: tasks.map((task) => ({
-          x: task.startDate,
-          y: task.name,
-        })),
-      },
-      {
-        label: 'Дата окончания',
-        backgroundColor: 'red',
-        data: tasks.map((task) => ({
-          x: task.endDate,
-          y: task.name,
-        })),
-      },
-    ],
-  };
+      // Подготовка данных для статистики
+      const statusCounts = {
+        новая: 0,
+        в_работе: 0,
+        завершена: 0,
+      };
 
-  // Настройка параметров диаграммы
-  const chartOptions = {
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'day',
-          displayFormats: {
-            day: 'D MMM',
+      tasks.forEach((task) => {
+        if (task.taskStatus === 'новая') {
+          statusCounts.новая++;
+        } else if (task.taskStatus === 'в работе') {
+          statusCounts.в_работе++;
+        } else if (task.taskStatus === 'завершена') {
+          statusCounts.завершена++;
+        }
+      });
+
+      // Подготовка данных для диаграммы
+      const chartData = {
+        labels: ['Новая', 'В работе', 'Завершена'],
+        datasets: [
+          {
+            label: 'Статус задачи',
+            backgroundColor: ['yellow', 'blue', 'green'],
+            data: [statusCounts.новая, statusCounts.в_работе, statusCounts.завершена],
+          },
+        ],
+      };
+
+      // Настройка параметров диаграммы
+      const chartOptions = {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Количество задач',
+            },
           },
         },
-        title: {
-          display: true,
-          text: 'Дата',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Задачи',
-        },
-      },
-    },
-  };
+      };
 
-  // Создание диаграммы
-  new Chart(ctx, {
-    type: 'bar',
-    data: chartData,
-    options: chartOptions,
-  });
-}
-}, [tasks]);
+      // Создание нового экземпляра диаграммы
+      chartInstanceRef.current = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: chartOptions,
+      });
+    }
+  }, [tasks]);
 
-return <canvas ref={chartRef} />;
+  return <canvas ref={chartRef} />;
 };
 
 export default GanttChart;
-
 
 
 

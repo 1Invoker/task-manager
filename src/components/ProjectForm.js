@@ -1,70 +1,58 @@
 import React, { useState } from 'react';
 
-const ProjectForm = () => {
-  const [projects, setProjects] = useState([]); //сост, содержащее список проектов
-  const [projectName, setProjectName] = useState('');//сост, содержащее текущее название проекта, введенное пользователем в форме
-  const [employees, setEmployees] = useState([]);// сост, содержащее список сотрудников текущего проекта
-  const [employeeName, setEmployeeName] = useState('');//сост, содержащее текущее имя сотрудника, введенное пользователем в форме
-  const [editMode, setEditMode] = useState(false);//сост, определяющее, находится ли форма в режиме редактирования проекта (true) или добавления нового проекта (false)
-  const [editIndex, setEditIndex] = useState(null);//сост, хранящее индекс редактируемого проекта в массиве 
+const ProjectForm = ({ employees }) => {
+  const [projects, setProjects] = useState([]);
+  const [projectName, setProjectName] = useState('');
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [editIndex, setEditIndex] = useState(-1);
 
-  // Обработч изменения значений в полях ввода
+  // Обработчик изменения значения в поле ввода формы
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'projectName') {
-      setProjectName(value);
-    } else if (name === 'employeeName') {
-      setEmployeeName(value);
-    }
+    setProjectName(e.target.value);
   };
 
-  // Обработчик добавления нового сотрудника в список
-  const handleAddEmployee = () => {
-    if (employeeName) {
-      setEmployees([...employees, employeeName]);
-      setEmployeeName('');
-    }
-  };
- // Обработчик добавления нового проекта или редактирования существующего
+  // Обработчик добавления или редактирования проекта
   const handleAddProject = (e) => {
     e.preventDefault();
-    if (projectName && employees.length > 0) {
-      if (editMode) {
-        // Если форма находится в режиме редактирования, обновляем информацию о проекте в массиве
-        const updatedProjects = [...projects];
-        updatedProjects[editIndex] = {
+    if (projectName && selectedEmployees.length > 0) {
+      if (editIndex !== -1) {
+        // Редактирование существующего проекта
+        const editedProject = {
           projectName: projectName,
-          employees: employees,
+          employees: selectedEmployees,
         };
+        const updatedProjects = [...projects];
+        updatedProjects[editIndex] = editedProject;
         setProjects(updatedProjects);
-        setEditMode(false);
-        setEditIndex(null);
+        setEditIndex(-1); // Завершаем режим редактирования
       } else {
-        // Если форма находится в режиме добавления нового проекта, добавляем его в массив
+        // Добавление нового проекта
         const newProject = {
           projectName: projectName,
-          employees: employees,
+          employees: selectedEmployees,
         };
         setProjects([...projects, newProject]);
-      }//сбрасываем после добав. или редактирования 
+      }
+      // Очистка полей формы после сохранения проекта
       setProjectName('');
-      setEmployees([]);
-      setEmployeeName('');
+      setSelectedEmployees([]);
     }
   };
 
+  // Обработчик редактирования проекта по индексу
   const handleEditProject = (index) => {
-    const projectToEdit = projects[index];
-    setProjectName(projectToEdit.projectName);
-    setEmployees(projectToEdit.employees);
-    setEditMode(true);
+    const project = projects[index];
+    setProjectName(project.projectName);
+    setSelectedEmployees(project.employees);
     setEditIndex(index);
   };
 
+  // Обработчик удаления проекта из массива
   const handleDeleteProject = (index) => {
     const updatedProjects = [...projects];
     updatedProjects.splice(index, 1);
     setProjects(updatedProjects);
+    setEditIndex(-1); // Завершаем режим редактирования (если был активен)
   };
 
   return (
@@ -73,33 +61,34 @@ const ProjectForm = () => {
       <form onSubmit={handleAddProject}>
         <div>
           <label>Название проекта:</label>
-          <input
-            type="text"
-            name="projectName"
-            value={projectName}
-            onChange={handleInputChange}
-          />
+          <input type="text" value={projectName} onChange={handleInputChange} />
         </div>
         <div>
           <label>Сотрудники:</label>
           <ul>
-            {employees.map((employee, index) => (
-              <li key={index}>{employee}</li>
+            {selectedEmployees.map((employee) => (
+              <li key={employee.id}>{employee.name}</li>
             ))}
           </ul>
-          <input
-            type="text"
-            name="employeeName"
-            value={employeeName}
-            onChange={handleInputChange}
-          />
-          <button type="button" onClick={handleAddEmployee}>
-            Добавить сотрудника
-          </button>
+          <select
+            multiple
+            value={selectedEmployees.map((employee) => employee.id)}
+            onChange={(e) =>
+              setSelectedEmployees(
+                Array.from(e.target.selectedOptions, (option) =>
+                  employees.find((employee) => employee.id === parseInt(option.value))
+                )
+              )
+            }
+          >
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.name}
+              </option>
+            ))}
+          </select>
         </div>
-        <button type="submit">
-          {editMode ? 'Редактировать проект' : 'Добавить проект'}
-        </button>
+        <button type="submit">Добавить проект</button>
       </form>
       <div>
         <h3>Список проектов</h3>
@@ -109,16 +98,12 @@ const ProjectForm = () => {
               <p>Название проекта: {project.projectName}</p>
               <p>Сотрудники:</p>
               <ul>
-                {project.employees.map((employee, employeeIndex) => (
-                  <li key={employeeIndex}>{employee}</li>
+                {project.employees.map((employee) => (
+                  <li key={employee.id}>{employee.name}</li>
                 ))}
               </ul>
-              <button onClick={() => handleEditProject(index)}>
-                Редактировать проект
-              </button>
-              <button onClick={() => handleDeleteProject(index)}>
-                Удалить проект
-              </button>
+              <button onClick={() => handleEditProject(index)}>Редактировать</button>
+              <button onClick={() => handleDeleteProject(index)}>Удалить</button>
             </li>
           ))}
         </ul>

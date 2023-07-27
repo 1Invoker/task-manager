@@ -1,33 +1,41 @@
 import React from 'react';
-import GanttChart from './GanttChart';
 
-const TaskList = () => {
-  const tasks = [
-    {
-      id: 1,
-      name: 'Задача 1',
-      startDate: '2023-07-01',
-      endDate: '2023-07-10',
-    },
-    {
-      id: 2,
-      name: 'Задача 2',
-      startDate: '2023-07-05',
-      endDate: '2023-07-15',
-    },
-    {
-        id: 2,
-        name: 'Задача 3',
-        startDate: '2021-07-05',
-        endDate: '2023-07-15',
-      },
-    
-  ];
+const TaskList = ({ tasks, employees, projects }) => {
+  const sortedTasks = sortTasksByCreationDate(tasks, 'asc');
+
+  // Функция для сортировки задач по дате создания
+  const sortTasksByCreationDate = (tasks, sortOrder) => {
+    const sortedTasks = [...tasks];
+
+    sortedTasks.sort((a, b) => {
+      const dateA = new Date(a.startDate);
+      const dateB = new Date(b.startDate);
+
+      if (sortOrder === 'asc') {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+
+    return sortedTasks;
+  };
 
   return (
     <div>
-      {/* Рендер компонента GanttChart и передача массива задач tasks */}
-      <GanttChart tasks={tasks} />
+      <h2>Список задач</h2>
+      <ul>
+        {sortedTasks.map((task) => (
+          <li key={task.id}>
+            <p>Номер задачи: {task.name}</p>
+            <p>Дата создания: {task.startDate}</p>
+            <p>Ответственный сотрудник: {employees.find((emp) => emp.id === task.employeeId)?.name}</p>
+            <p>Планируемая дата завершения: {task.endDate}</p>
+            <p>Проект: {projects.find((proj) => proj.id === task.projectId)?.name}</p>
+            <p>Статус задачи: {task.taskStatus}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
