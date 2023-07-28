@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { employees, projects, tasks, updateTasksData } from './data';
+import { employees, projects, tasks, updateTasksData } from './data'; // Импортируем данные из файла data.js
 
 const TaskForm = () => {
+  // Состояние для хранения данных о задачах
   const [tasksData, setTasksData] = useState(tasks);
+  // Состояния для управления формой
   const [taskNumber, setTaskNumber] = useState('');
   const [creationDate, setCreationDate] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -14,6 +16,7 @@ const TaskForm = () => {
   const [taskStatus, setTaskStatus] = useState('');
   const [editIndex, setEditIndex] = useState(-1);
 
+  // Обработчик изменения значения в полях ввода формы
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'taskNumber') {
@@ -33,13 +36,16 @@ const TaskForm = () => {
     }
   };
 
+  // Функция для добавления новой задачи в массив и обновления данных в data.js
   const handleAddTask = (newTask) => {
     setTasksData([...tasksData, newTask]);
     updateTasksData([...tasksData, newTask]);
   };
 
+  // Обработчик события отправки формы с задачей
   const handleTaskSubmit = (e) => {
     e.preventDefault();
+    // Проверяем, что все необходимые поля заполнены
     if (
       taskNumber &&
       creationDate &&
@@ -50,6 +56,7 @@ const TaskForm = () => {
       taskStatus
     ) {
       if (editIndex !== -1) {
+        // Редактирование существующей задачи
         const editedTask = {
           id: tasksData[editIndex].id,
           taskNumber: taskNumber,
@@ -68,6 +75,7 @@ const TaskForm = () => {
         updateTasksData(updatedTasks);
         setEditIndex(-1);
       } else {
+        // Добавление новой задачи
         const newTask = {
           id: tasksData.length + 1,
           taskNumber: taskNumber,
@@ -82,6 +90,7 @@ const TaskForm = () => {
         };
         handleAddTask(newTask);
       }
+      // Очистка полей формы после сохранения задачи
       setTaskNumber('');
       setCreationDate('');
       setSelectedEmployee(null);
@@ -94,6 +103,7 @@ const TaskForm = () => {
     }
   };
 
+  // Обработчик редактирования задачи по индексу
   const handleEditTask = (index) => {
     const task = tasksData[index];
     setTaskNumber(task.taskNumber);
@@ -108,6 +118,7 @@ const TaskForm = () => {
     setEditIndex(index);
   };
 
+  // Обработчик удаления задачи по ID
   const handleDeleteTask = (id) => {
     const updatedTasks = tasksData.filter((task) => task.id !== id);
     setTasksData(updatedTasks);

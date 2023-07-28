@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { projects, updateProjectsData } from './data'; // Импортируем массив projects и функцию updateProjectsData из файла data.js
 
 const ProjectForm = ({ employees }) => {
-  const [projects, setProjects] = useState([]);
+  // Состояние для хранения данных о проектах
+  const [projectsData, setProjectsData] = useState([]);
+  // Состояния для управления формой
   const [projectName, setProjectName] = useState('');
   const [selectedEmployeesIds, setSelectedEmployeesIds] = useState([]);
   const [editIndex, setEditIndex] = useState(-1);
@@ -21,9 +24,9 @@ const ProjectForm = ({ employees }) => {
           projectName: projectName,
           employees: selectedEmployeesIds.map((empId) => employees.find((emp) => emp.id === empId)),
         };
-        const updatedProjects = [...projects];
+        const updatedProjects = [...projectsData];
         updatedProjects[editIndex] = editedProject;
-        setProjects(updatedProjects);
+        setProjectsData(updatedProjects);
         setEditIndex(-1); // Завершаем режим редактирования
       } else {
         // Добавление нового проекта
@@ -31,7 +34,7 @@ const ProjectForm = ({ employees }) => {
           projectName: projectName,
           employees: selectedEmployeesIds.map((empId) => employees.find((emp) => emp.id === empId)),
         };
-        setProjects([...projects, newProject]);
+        setProjectsData([...projectsData, newProject]);
       }
       // Очистка полей формы после сохранения проекта
       setProjectName('');
@@ -41,7 +44,7 @@ const ProjectForm = ({ employees }) => {
 
   // Обработчик редактирования проекта по индексу
   const handleEditProject = (index) => {
-    const project = projects[index];
+    const project = projectsData[index];
     setProjectName(project.projectName);
     setSelectedEmployeesIds(project.employees.map((emp) => emp.id));
     setEditIndex(index);
@@ -49,9 +52,9 @@ const ProjectForm = ({ employees }) => {
 
   // Обработчик удаления проекта из массива
   const handleDeleteProject = (index) => {
-    const updatedProjects = [...projects];
+    const updatedProjects = [...projectsData];
     updatedProjects.splice(index, 1);
-    setProjects(updatedProjects);
+    setProjectsData(updatedProjects);
     setEditIndex(-1); // Завершаем режим редактирования (если был активен)
   };
 
@@ -93,7 +96,7 @@ const ProjectForm = ({ employees }) => {
       <div>
         <h3>Список проектов</h3>
         <ul>
-          {projects.map((project, index) => (
+          {projectsData.map((project, index) => (
             <li key={index}>
               <p>Название проекта: {project.projectName}</p>
               <p>Сотрудники:</p>
