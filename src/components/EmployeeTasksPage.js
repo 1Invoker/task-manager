@@ -3,12 +3,30 @@ import TaskForm from './TaskForm';
 
 const EmployeeTasksPage = ({ employees, tasks, projects }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [sortByDate, setSortByDate] = useState(false);
 
   const handleEmployeeChange = (e) => {
     const selectedEmployeeId = parseInt(e.target.value);
     const employee = employees.find((emp) => emp.id === selectedEmployeeId);
     setSelectedEmployee(employee);
   };
+
+  const handleSortByDate = () => {
+    setSortByDate((prevState) => !prevState);
+  };
+
+  const getEmployeeTasks = () => {
+    if (selectedEmployee) {
+      return sortByDate
+        ? tasks
+            .filter((task) => task.responsibleEmployeeId === selectedEmployee.id)
+            .sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate))
+        : tasks.filter((task) => task.responsibleEmployeeId === selectedEmployee.id);
+    }
+    return [];
+  };
+
+  const employeeTaskList = getEmployeeTasks();
 
   return (
     <div>
@@ -27,26 +45,28 @@ const EmployeeTasksPage = ({ employees, tasks, projects }) => {
       {selectedEmployee && (
         <div>
           <h3>Задачи для сотрудника: {selectedEmployee.name}</h3>
+          <div>
+            <button onClick={handleSortByDate}>
+              {sortByDate ? 'Отключить сортировку' : 'Сортировать по дате создания'}
+            </button>
+          </div>
           <ul>
-            {tasks
-              .filter((task) => task.responsibleEmployeeId === selectedEmployee.id)
-              .map((task) => (
-                <li key={task.id}>
-                  <p>Номер задачи: {task.taskNumber}</p>
-                  <p>Дата создания: {task.creationDate}</p>
-                  <p>Ответственный сотрудник: {selectedEmployee.name}</p>
-                  <p>Планируемая дата завершения: {task.plannedCompletionDate}</p>
-                  <p>Фактическая дата завершения: {task.actualCompletionDate || 'еще не завершено'}</p>
-                  <p>Название задачи: {task.taskName}</p>
-                  <p>Текст задачи: {task.taskText}</p>
-                  <p>Проект: {task.project}</p>
-                  <p>Статус задачи: {task.taskStatus}</p>
-                </li>
-              ))}
+            {employeeTaskList.map((task) => (
+              <li key={task.id}>
+                <p>Номер задачи: {task.taskNumber}</p>
+                <p>Дата создания: {task.creationDate}</p>
+                <p>Ответственный сотрудник: {selectedEmployee.name}</p>
+                <p>Планируемая дата завершения: {task.plannedCompletionDate}</p>
+                <p>Фактическая дата завершения: {task.actualCompletionDate || 'еще не завершено'}</p>
+                <p>Название задачи: {task.taskName}</p>
+                <p>Текст задачи: {task.taskText}</p>
+                <p>Проект: {task.project}</p>
+                <p>Статус задачи: {task.taskStatus}</p>
+              </li>
+            ))}
           </ul>
         </div>
       )}
-      {selectedEmployee && <TaskForm employees={[selectedEmployee]} projects={projects} />}
     </div>
   );
 };

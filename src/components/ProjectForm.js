@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const ProjectForm = ({ employees }) => {
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState('');
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [selectedEmployeesIds, setSelectedEmployeesIds] = useState([]);
   const [editIndex, setEditIndex] = useState(-1);
 
   // Обработчик изменения значения в поле ввода формы
@@ -14,12 +14,12 @@ const ProjectForm = ({ employees }) => {
   // Обработчик добавления или редактирования проекта
   const handleAddProject = (e) => {
     e.preventDefault();
-    if (projectName && selectedEmployees.length > 0) {
+    if (projectName && selectedEmployeesIds.length > 0) {
       if (editIndex !== -1) {
         // Редактирование существующего проекта
         const editedProject = {
           projectName: projectName,
-          employees: selectedEmployees,
+          employees: selectedEmployeesIds.map((empId) => employees.find((emp) => emp.id === empId)),
         };
         const updatedProjects = [...projects];
         updatedProjects[editIndex] = editedProject;
@@ -29,13 +29,13 @@ const ProjectForm = ({ employees }) => {
         // Добавление нового проекта
         const newProject = {
           projectName: projectName,
-          employees: selectedEmployees,
+          employees: selectedEmployeesIds.map((empId) => employees.find((emp) => emp.id === empId)),
         };
         setProjects([...projects, newProject]);
       }
       // Очистка полей формы после сохранения проекта
       setProjectName('');
-      setSelectedEmployees([]);
+      setSelectedEmployeesIds([]);
     }
   };
 
@@ -43,7 +43,7 @@ const ProjectForm = ({ employees }) => {
   const handleEditProject = (index) => {
     const project = projects[index];
     setProjectName(project.projectName);
-    setSelectedEmployees(project.employees);
+    setSelectedEmployeesIds(project.employees.map((emp) => emp.id));
     setEditIndex(index);
   };
 
@@ -53,6 +53,12 @@ const ProjectForm = ({ employees }) => {
     updatedProjects.splice(index, 1);
     setProjects(updatedProjects);
     setEditIndex(-1); // Завершаем режим редактирования (если был активен)
+  };
+
+  // Обработчик изменения выбранных сотрудников
+  const handleEmployeeSelectionChange = (e) => {
+    const selectedEmpIds = Array.from(e.target.selectedOptions, (option) => parseInt(option.value));
+    setSelectedEmployeesIds(selectedEmpIds);
   };
 
   return (
@@ -66,20 +72,14 @@ const ProjectForm = ({ employees }) => {
         <div>
           <label>Сотрудники:</label>
           <ul>
-            {selectedEmployees.map((employee) => (
-              <li key={employee.id}>{employee.name}</li>
+            {selectedEmployeesIds.map((empId) => (
+              <li key={empId}>{employees.find((emp) => emp.id === empId)?.name}</li>
             ))}
           </ul>
           <select
             multiple
-            value={selectedEmployees.map((employee) => employee.id)}
-            onChange={(e) =>
-              setSelectedEmployees(
-                Array.from(e.target.selectedOptions, (option) =>
-                  employees.find((employee) => employee.id === parseInt(option.value))
-                )
-              )
-            }
+            value={selectedEmployeesIds}
+            onChange={handleEmployeeSelectionChange}
           >
             {employees.map((employee) => (
               <option key={employee.id} value={employee.id}>

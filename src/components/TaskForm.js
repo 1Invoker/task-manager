@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { employees, projects, tasks, updateTasksData } from './data';
 
-const TaskForm = ({ employees, projects }) => {
-  const [tasks, setTasks] = useState([]);
+const TaskForm = () => {
+  const [tasksData, setTasksData] = useState(tasks);
   const [taskNumber, setTaskNumber] = useState('');
   const [creationDate, setCreationDate] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -13,10 +14,8 @@ const TaskForm = ({ employees, projects }) => {
   const [taskStatus, setTaskStatus] = useState('');
   const [editIndex, setEditIndex] = useState(-1);
 
-  // Обработчик изменения значений в полях ввода формы
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Обновляем соответствующее состояние в зависимости от имени поля ввода
     if (name === 'taskNumber') {
       setTaskNumber(value);
     } else if (name === 'creationDate') {
@@ -34,7 +33,11 @@ const TaskForm = ({ employees, projects }) => {
     }
   };
 
-  // Обработчик отправки формы задачи (добавление или редактирование)
+  const handleAddTask = (newTask) => {
+    setTasksData([...tasksData, newTask]);
+    updateTasksData([...tasksData, newTask]);
+  };
+
   const handleTaskSubmit = (e) => {
     e.preventDefault();
     if (
@@ -47,38 +50,38 @@ const TaskForm = ({ employees, projects }) => {
       taskStatus
     ) {
       if (editIndex !== -1) {
-        // Редактирование существующей задачи
         const editedTask = {
+          id: tasksData[editIndex].id,
           taskNumber: taskNumber,
           creationDate: creationDate,
-          responsibleEmployee: selectedEmployee,
+          responsibleEmployeeId: selectedEmployee.id,
           plannedCompletionDate: plannedCompletionDate,
-          actualCompletionDate: actualCompletionDate,
+          actualCompletionDate: actualCompletionDate || null,
           taskName: taskName,
           taskText: taskText,
           project: selectedProject.name,
           taskStatus: taskStatus,
         };
-        const updatedTasks = [...tasks];
+        const updatedTasks = [...tasksData];
         updatedTasks[editIndex] = editedTask;
-        setTasks(updatedTasks);
-        setEditIndex(-1); // Завершаем режим редактирования
+        setTasksData(updatedTasks);
+        updateTasksData(updatedTasks);
+        setEditIndex(-1);
       } else {
-        // Добавление новой задачи
         const newTask = {
+          id: tasksData.length + 1,
           taskNumber: taskNumber,
           creationDate: creationDate,
-          responsibleEmployee: selectedEmployee,
+          responsibleEmployeeId: selectedEmployee.id,
           plannedCompletionDate: plannedCompletionDate,
-          actualCompletionDate: actualCompletionDate,
+          actualCompletionDate: actualCompletionDate || null,
           taskName: taskName,
           taskText: taskText,
           project: selectedProject.name,
           taskStatus: taskStatus,
         };
-        setTasks([...tasks, newTask]);
+        handleAddTask(newTask);
       }
-      // Очистка полей формы после сохранения задачи
       setTaskNumber('');
       setCreationDate('');
       setSelectedEmployee(null);
@@ -91,14 +94,13 @@ const TaskForm = ({ employees, projects }) => {
     }
   };
 
-  // Обработчик редактирования задачи по индексу
   const handleEditTask = (index) => {
-    const task = tasks[index];
+    const task = tasksData[index];
     setTaskNumber(task.taskNumber);
     setCreationDate(task.creationDate);
-    setSelectedEmployee(employees.find((employee) => employee.id === task.responsibleEmployee.id));
+    setSelectedEmployee(employees.find((employee) => employee.id === task.responsibleEmployeeId));
     setPlannedCompletionDate(task.plannedCompletionDate);
-    setActualCompletionDate(task.actualCompletionDate);
+    setActualCompletionDate(task.actualCompletionDate || '');
     setTaskName(task.taskName);
     setTaskText(task.taskText);
     setSelectedProject(projects.find((project) => project.name === task.project));
@@ -106,11 +108,11 @@ const TaskForm = ({ employees, projects }) => {
     setEditIndex(index);
   };
 
-  // Обработчик удаления задачи из массива
   const handleDeleteTask = (id) => {
-    const updatedTasks = tasks.filter((task) => task.id !== id);
-    setTasks(updatedTasks);
-    setEditIndex(-1); // Завершаем режим редактирования (если был активен)
+    const updatedTasks = tasksData.filter((task) => task.id !== id);
+    setTasksData(updatedTasks);
+    updateTasksData(updatedTasks);
+    setEditIndex(-1);
   };
 
   return (
@@ -199,13 +201,19 @@ const TaskForm = ({ employees, projects }) => {
       <div>
         <h3>Список задач</h3>
         <ul>
-          {tasks.map((task, index) => (
+          {tasksData.map((task, index) => (
             <li key={task.id}>
               <p>Номер задачи: {task.taskNumber}</p>
               <p>Дата создания: {task.creationDate}</p>
-              <p>Ответственный сотрудник: {task.responsibleEmployee.name}</p>
+              <p>
+                Ответственный сотрудник:{' '}
+                {employees.find((employee) => employee.id === task.responsibleEmployeeId)?.name}
+              </p>
               <p>Планируемая дата завершения: {task.plannedCompletionDate}</p>
-              <p>Фактическая дата завершения: {task.actualCompletionDate}</p>
+              <p>
+                Фактическая дата завершения:{' '}
+                {task.actualCompletionDate || 'еще не завершено'}
+              </p>
               <p>Название задачи: {task.taskName}</p>
               <p>Текст задачи: {task.taskText}</p>
               <p>Проект: {task.project}</p>
@@ -214,7 +222,6 @@ const TaskForm = ({ employees, projects }) => {
               <button onClick={() => handleDeleteTask(task.id)}>Удалить</button>
               {editIndex === index && (
                 <div>
-                  {/* Форма для редактирования задачи */}
                   <button onClick={() => setEditIndex(-1)}>Отмена</button>
                 </div>
               )}

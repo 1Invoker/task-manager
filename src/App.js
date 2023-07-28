@@ -5,7 +5,7 @@ import TaskForm from './components/TaskForm';
 import GanttChart from './components/GanttChart';
 import EmployeeStats from './components/EmployeeStats';
 import TaskList from './components/TaskList';
-import { employees, projects, tasks } from './components/data'; // Импортируем данные из data.js
+import { employees, projects, tasks } from './components/data'; 
 import EmployeeTasksPage from './components/EmployeeTasksPage';
 import './App.css';
 
@@ -28,7 +28,7 @@ const App = () => {
               <Link to="/employee-stats" className="nav-link">Статистика сотрудников</Link>
             </li>
             <li className="nav-item">
-              <Link to="/employee-tasks" className="nav-link">Задания сотрудников</Link> {/* Новый маршрут */}
+              <Link to="/employee-tasks" className="nav-link">Задания сотрудников</Link> 
             </li>
           </ul>
         </nav>
@@ -38,7 +38,7 @@ const App = () => {
           <Route path="/tasks" element={<TaskForm employees={employees} projects={projects} />} />
           <Route path="/gantt-chart" element={<GanttChart tasks={tasks} />} />
           <Route path="/employee-stats" element={<EmployeeStats tasks={tasks} employees={employees} />} />
-          <Route path="/employee-tasks" element={<EmployeeTasksPage employees={employees} tasks={tasks} />} /> {/* Новый маршрут */}
+          <Route path="/employee-tasks" element={<EmployeeTasksPage employees={employees} tasks={tasks} />} /> 
         </Routes>
       </div>
     </BrowserRouter>
